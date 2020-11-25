@@ -1,21 +1,38 @@
 import {useDispatch, useSelector} from 'react-redux';
+
 import {StoreState} from 'store';
 import {Article} from 'interfaces/article';
 
-import {ArticlesStoreState, fetchArticles} from 'store/articles';
+import {
+  setSorting,
+  setFilters,
+  getArticles,
+  ArticlesStoreState,
+  Sorting,
+  Filter
+} from 'store/articles';
 
 export const useArticles = () => {
   const dispatch = useDispatch();
 
-  const { data, error } = useSelector<StoreState, ArticlesStoreState>(
+  const { currentData, error, isLoading, fetchedAt, filters } = useSelector<StoreState, ArticlesStoreState>(
     (state) => state.articles
   );
 
   return {
-    articles: data,
+    data: currentData,
     error,
-    fetchArticles: (category: Article['category']) => {
-      dispatch(fetchArticles(category));
+    isLoading,
+    fetchedAt,
+    filters,
+    get: (category: Article['category']) => {
+      dispatch(getArticles(category));
+    },
+    setSorting: (sorting: Sorting) => {
+      dispatch(setSorting(sorting));
+    },
+    setFilters: (filters: Filter[]) => {
+      dispatch(setFilters(filters));
     }
   };
 }

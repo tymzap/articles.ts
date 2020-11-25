@@ -21,7 +21,7 @@ const PORT = 6010;
 function requestHandler(req, res) {
     let content;
     let status;
-    if (Math.random() > 0) {
+    if (Math.random() > 0.1) {
         if (req.url === '/articles/sports') {
             content = {articles: fakeArticlesData.filter(a => a.category === 'sport')};
             status = 200;
