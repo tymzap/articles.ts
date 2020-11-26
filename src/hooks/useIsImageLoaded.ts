@@ -4,9 +4,7 @@ const useIsImageLoaded = (src: string): boolean => {
   let image: HTMLImageElement | null = document.createElement('img');
   image.src = src;
 
-  const [isImageLoaded, setIsImageLoaded] = useState(
-    image.complete || (image.width + image.height) > 0
-  );
+  const [isImageLoaded, setIsImageLoaded] = useState(image.complete);
 
   useEffect(() => {
     if (!isImageLoaded) {

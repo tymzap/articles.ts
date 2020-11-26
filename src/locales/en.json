@@ -30,5 +30,12 @@
     "title": "articles.ts",
     "slogan": "Simple articles fetcher",
     "changeColorSchemeButtonLabel": "Change color scheme"
+  },
+  "helloTour": {
+    "title": "Welcome to articles.ts!",
+    "dismissCheckboxLabel": "I don't want to see this tour again",
+    "cancelButton": "Cancel",
+    "finishButton": "Finish",
+    "nextButton": "Next"
   }
 }

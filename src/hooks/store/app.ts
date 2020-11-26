@@ -1,19 +1,25 @@
 import {useDispatch, useSelector} from 'react-redux';
 
 import {StoreState} from 'store';
-import {setColorScheme, AppStoreState} from 'store/app';
+import {setColorScheme, setIsHelloTourRead, AppStoreState} from 'store/app';
 
-export const useColorScheme = () => {
+export const useAppSettings = () => {
   const dispatch = useDispatch();
 
-  const colorScheme = useSelector<
-    StoreState, AppStoreState['colorScheme']
-  >((state) => state.app.colorScheme);
+  const {colorScheme, isHeroTourRead} = useSelector<
+    StoreState, AppStoreState
+  >((state) => state.app);
 
   return {
     colorScheme,
-    setColorScheme: (colorScheme: AppStoreState['colorScheme']) => {
-      dispatch(setColorScheme(colorScheme));
+    isHeroTourRead,
+    set: (options: Partial<AppStoreState>) => {
+      if (options.colorScheme) {
+        dispatch(setColorScheme(options.colorScheme));
+      }
+      if (options.isHeroTourRead) {
+        dispatch(setIsHelloTourRead(options.isHeroTourRead));
+      }
     }
   }
 };

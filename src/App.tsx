@@ -5,18 +5,18 @@ import {
   defaultTheme,
   View,
   Flex,
-  ProgressCircle
 } from '@adobe/react-spectrum';
 
 import history from 'services/history';
 import Articles from 'containers/Articles';
 import Header from 'components/Header';
-import {useColorScheme} from 'hooks/store/app';
+import {useAppSettings} from 'hooks/store/app';
+import HelloTour from 'components/HelloTour';
 
 import ROUTES from './routes';
 
 const App = () => {
-  const {colorScheme} = useColorScheme();
+  const {colorScheme} = useAppSettings();
 
   return (
     <SpectrumProvider
@@ -26,6 +26,7 @@ const App = () => {
       minHeight={'100%'}
       position={'relative'}
     >
+      <HelloTour />
       <View>
         <Flex direction={'column'}>
           <Header />
