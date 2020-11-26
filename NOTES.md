@@ -12,8 +12,9 @@
 
 ## Architecture
 - Redux Toolkit was used to reduce state management boilerplate code and to provide solid ground for future development and testing
+- Adobe Spectrum abstract away writing styles, managing classes, etc, it provides much cleaner, concise code and shortens development time by lot. It is not production ready yet but definitely interesting to try
 - All language strings stored in JSON file for easy modification and addition of new languages
-- Sorting and filtering: it is easy to add new sorting and filtering types, also logic is written in way to be reusable for new Redux slices
+- Sorting and filtering: it is easy to add new sorting and filtering types, also logic is written in way to be reusable for new Redux slice
 
 ## User experience
 - Adobe Spectrum UI kit was used, it provides consistent components design and rich ARIA support
