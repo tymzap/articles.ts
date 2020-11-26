@@ -62,6 +62,7 @@ const articlesSlice = createSlice({
       return {
         ...state,
         filters,
+        sorting: null,
         currentData:
           filters.reduce(
             (accumulator, filter) =>
@@ -74,24 +75,29 @@ const articlesSlice = createSlice({
           )
       }
     },
-    setSorting: (state, action: PayloadAction<Sorting>) => {
+    setSorting: (
+      state,
+      action: PayloadAction<ArticlesStoreState['sorting']>
+    ) => {
       const sorting = action.payload;
       const dataToSort = state.currentData.length ? state.currentData : state.data;
       return {
         ...state,
         sorting: sorting,
         currentData:
-          dataToSort.slice().sort(
-            (previousArticle, nextArticle) =>
-              sorting.key === 'date'
-                ? compare(
+          sorting
+            ? dataToSort.slice().sort(
+              (previousArticle, nextArticle) =>
+                sorting.key === 'date'
+                  ? compare(
                   dayjs(previousArticle.date, FORMAT)
                     .isBefore(dayjs(nextArticle.date, FORMAT)), sorting.order
-                )
-                : compare(
+                  )
+                  : compare(
                   previousArticle.title < nextArticle.title, sorting.order
-                )
-          )
+                  )
+              )
+            : dataToSort
       }
     },
     setIsLoading: (state, action: PayloadAction<boolean>) => ({
@@ -135,15 +141,14 @@ export const getArticles = createAsyncThunk(
       }));
     } catch (error) {
       dispatch(setError(error.message));
+      dispatch(setFilters([]));
     }
     dispatch(setIsLoading(false));
     dispatch(setFilters(unionWith(state.filters, [{
       key: 'category',
       is: category
     }], isEqual)));
-    if (state.sorting) {
-      dispatch(setSorting(state.sorting));
-    }
+    dispatch(setSorting(null));
   }
 );
 

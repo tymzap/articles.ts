@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
   View,
   Flex,
@@ -7,11 +7,11 @@ import {
   ListBox,
   Section,
   Content,
-  ProgressCircle,
   IllustratedMessage,
-  Heading
+  Heading,
 } from '@adobe/react-spectrum';
-import Error from '@spectrum-icons/illustrations/Error';
+import ErrorIllustration from '@spectrum-icons/illustrations/Error';
+import NoSearchResultsIllustration from '@spectrum-icons/illustrations/NoSearchResults';
 import omit from 'lodash/omit';
 import compact from 'lodash/compact';
 
@@ -36,49 +36,70 @@ const Articles = () => {
 
   const {width} = useWindowSize();
 
-  console.log('sorting', sorting);
-
-  useEffect(() => {
-    console.log('articles', data);
-  }, [data]);
+  const renderListBox = () => (
+    <ListBox
+      selectionMode={'multiple'}
+      onSelectionChange={(selection) => {
+        if (selection instanceof Set) {
+          const categories = Array.from(selection) as Filter['is'][];
+          const filters: Filter[] = compact(categories.map((category) => {
+            if (!fetchedAt[category]) {
+              get(category);
+              return;
+            } else {
+              return {
+                key: 'category',
+                is: category
+              }
+            }
+          }));
+          setFilters(filters);
+        }
+      }}
+      selectedKeys={filters.map((filter) => filter.is)}
+      width={width >= BREAKPOINTS.PHONE ? 'size-3000' : '100%'}
+      isLoading={isLoading}
+    >
+      <Section title={'Data sources'}>
+        <Item key={'fashion'}>Fashion</Item>
+        <Item key={'sport'}>Sport</Item>
+      </Section>
+    </ListBox>
+  );
 
   return (
     <View
       paddingX={'size-300'}
       paddingTop={'size-200'}
-      paddingBottom={'size-400'}
+      paddingBottom={'size-800'}
     >
       <Flex direction={width >= BREAKPOINTS.PHONE ? 'row' : 'column'}>
-        <Flex>
-          <ListBox
-            selectionMode={'multiple'}
-            onSelectionChange={(selection) => {
-              if (selection instanceof Set) {
-                const categories = Array.from(selection) as Filter['is'][];
-                const filters: Filter[] = compact(categories.map((category) => {
-                  if (!fetchedAt[category]) {
-                    get(category);
-                    return;
-                  } else {
-                    return {
-                      key: 'category',
-                      is: category
-                    }
-                  }
-                }));
-                setFilters(filters);
-              }
-            }}
-            width={'size-2400'}
-          >
-            <Section title={'Data sources'}>
-              <Item key={'fashion'}>Fashion</Item>
-              <Item key={'sport'}>Sport</Item>
-            </Section>
-          </ListBox>
+        <Flex
+          isHidden={width >= BREAKPOINTS.PHONE && width < BREAKPOINTS.DESKTOP}
+        >
+          {renderListBox()}
         </Flex>
-        <Flex direction={'column'} width={'100%'}>
-          <Flex justifyContent={'end'}>
+        <Flex
+          direction={'column'}
+          width={'100%'}
+          marginTop={width < BREAKPOINTS.PHONE ? 'size-150' : undefined}
+        >
+          <Flex
+            justifyContent={
+              width >= BREAKPOINTS.PHONE
+                ? width >= BREAKPOINTS.DESKTOP
+                  ? 'end'
+                  : 'space-between'
+                : 'center'
+            }
+          >
+            <Flex
+              isHidden={
+                width < BREAKPOINTS.PHONE || width >= BREAKPOINTS.DESKTOP
+              }
+            >
+              {renderListBox()}
+            </Flex>
             <Picker
               label={'Sort by'}
               onSelectionChange={(key) => {
@@ -99,6 +120,11 @@ const Articles = () => {
                 );
               }}
               isDisabled={!data.length}
+              selectedKey={
+                sorting
+                  ? `${sorting.key}${sorting.order === 'ASC' ? 'Asc' : 'Desc'}`
+                  : 0
+              }
             >
               <Item key={'dateAsc'}>Date: ascending</Item>
               <Item key={'dateDesc'}>Date: descending</Item>
@@ -106,8 +132,11 @@ const Articles = () => {
               <Item key={'titleDesc'}>Title: descending</Item>
             </Picker>
           </Flex>
-          <Flex marginTop={'size-225'} marginStart={'size-225'}>
-            <Content isHidden={!data.length || !!error || isLoading}>
+          <Flex
+            marginTop={'size-300'}
+            marginStart={width >= BREAKPOINTS.PHONE ? 'size-225' : undefined}
+          >
+            <Content isHidden={!data.length || !!error || isLoading} width={'100%'}>
               {data.map((article, index) => (
                 <Article
                   {...omit(article, ['id'])}
@@ -119,25 +148,31 @@ const Articles = () => {
             <Flex
               justifyContent={'center'}
               alignItems={'center'}
-              isHidden={!error}
+              isHidden={!!data.length && !error}
               margin={'size-1000'}
               width={'100%'}
             >
-              <IllustratedMessage>
-                <Error />
-                <Heading>Sorry, we have a problem</Heading>
-                <Content>{error}</Content>
+              <IllustratedMessage
+                marginEnd={width >= BREAKPOINTS.DESKTOP ? 'size-3000' : undefined}
+              >
+              {!!error
+                ? (
+                  <>
+                    <ErrorIllustration />
+                    <Heading>Sorry, we have a problem</Heading>
+                    <Content>Please try using filters again</Content>
+                  </>
+                )
+                : (
+                  <>
+                    <NoSearchResultsIllustration />
+                    <Heading>No results!</Heading>
+                    <Content>Please use filters to find some articles</Content>
+                  </>
+                )
+              }
               </IllustratedMessage>
             </Flex>
-          </Flex>
-          <Flex
-            justifyContent={'center'}
-            alignItems={'center'}
-            isHidden={!isLoading}
-            margin={'size-1000'}
-            width={'100%'}
-          >
-            <ProgressCircle isIndeterminate={true}/>
           </Flex>
         </Flex>
       </Flex>

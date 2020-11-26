@@ -29,16 +29,17 @@ const Article = ({title, preamble, image, date, ...rest}: ArticleProps) => {
       borderWidth={'thin'}
       borderColor={'dark'}
       borderRadius={'medium'}
+      width={'100%'}
       {...rest}
     >
-      <Flex alignItems={width >= BREAKPOINTS.TABLET ? 'start' : 'center'}>
+      <Flex alignItems={'start'}>
         <Flex
-          width={width >= BREAKPOINTS.TABLET ? 'size-3000' : 'size-1600'}
           justifyContent={'center'}
           alignItems={'center'}
           alignSelf={'center'}
           flexShrink={0}
-          flexGrow={0}
+          width={width >= BREAKPOINTS.TABLET ? 'size-2400' : 'size-1600'}
+          height={width >= BREAKPOINTS.TABLET ? 'size-1600' : 'size-800'}
         >
           {image
             ? isImageLoaded
@@ -46,7 +47,7 @@ const Article = ({title, preamble, image, date, ...rest}: ArticleProps) => {
                   <Image
                     src={image}
                     alt={title}
-                    width={'100%'}
+                    width={width >= BREAKPOINTS.TABLET ? 'size-3000' : 'size-1600'}
                     height={'auto'}
                   />
               )
@@ -62,14 +63,17 @@ const Article = ({title, preamble, image, date, ...rest}: ArticleProps) => {
         >
           <Flex
             direction={width >= BREAKPOINTS.TABLET ? 'row' : 'column'}
-            alignItems={width >= BREAKPOINTS.TABLET ? 'center' : 'start'}
+            alignItems={'start'}
             justifyContent={'space-between'}
           >
-            <Heading level={3}>{title}</Heading>
+            <Heading level={3} marginTop={0}>{title}</Heading>
             <Text
               marginStart={
                 width >= BREAKPOINTS.TABLET ? 'size-300' : undefined
               }
+              UNSAFE_style={{
+                whiteSpace: 'nowrap'
+              }}
             >
               {date}
             </Text>
