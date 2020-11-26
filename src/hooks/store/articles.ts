@@ -2,7 +2,6 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import {StoreState} from 'store';
 import {Article} from 'interfaces/article';
-
 import {
   setSorting,
   setFilters,
@@ -15,7 +14,14 @@ import {
 export const useArticles = () => {
   const dispatch = useDispatch();
 
-  const { currentData, error, isLoading, fetchedAt, filters } = useSelector<StoreState, ArticlesStoreState>(
+  const {
+    currentData,
+    error,
+    isLoading,
+    fetchedAt,
+    filters,
+    sorting
+  } = useSelector<StoreState, ArticlesStoreState>(
     (state) => state.articles
   );
 
@@ -25,6 +31,7 @@ export const useArticles = () => {
     isLoading,
     fetchedAt,
     filters,
+    sorting,
     get: (category: Article['category']) => {
       dispatch(getArticles(category));
     },

@@ -19,22 +19,32 @@ export type Sorting = {
   order: 'ASC' | 'DESC'
 };
 
+export type ArticlesStoreState = {
+  data: Article[];
+  currentData: Article[];
+  filters: Filter[];
+  sorting: Sorting | null;
+  error: string;
+  isLoading: boolean;
+  fetchedAt: {
+    [K in Article['category']]: number
+  };
+};
+
 const articlesSlice = createSlice({
   name: 'articles',
   initialState: {
-    data: [] as Article[],
-    currentData: [] as Article[],
-    filters: [] as Filter[],
-    sorting: [] as Sorting[],
+    data: [],
+    currentData: [],
+    filters: [],
+    sorting: null,
     error: '',
     isLoading: false,
     fetchedAt: {
       sport: 0,
       fashion: 0
-    } as {
-      [K in Article['category']]: number
     }
-  },
+  } as ArticlesStoreState,
   reducers: {
     setArticles: (state, action: PayloadAction<Article[]>) => ({
       ...state,
@@ -44,26 +54,32 @@ const articlesSlice = createSlice({
       ...state,
       error: action.payload
     }),
-    setFilters: (state, action: PayloadAction<Filter[]>) => ({
-      ...state,
-      filters: action.payload,
-      currentData:
-        action.payload.reduce(
-          (accumulator, filter) =>
-            accumulator.concat(
-              state.data.filter(
-                (article) => article[filter.key] === filter.is
-              )
-            ),
-            [] as Article[]
-        )
-    }),
+    setFilters: (state, action: PayloadAction<Filter[]>) => {
+      const filters = action.payload;
+      const dataToFilter = state.currentData.length && !state.filters.length
+        ? state.currentData
+        : state.data;
+      return {
+        ...state,
+        filters,
+        currentData:
+          filters.reduce(
+            (accumulator, filter) =>
+              accumulator.concat(
+                dataToFilter.filter(
+                  (article) => article[filter.key] === filter.is
+                )
+              ),
+              [] as Article[]
+          )
+      }
+    },
     setSorting: (state, action: PayloadAction<Sorting>) => {
       const sorting = action.payload;
       const dataToSort = state.currentData.length ? state.currentData : state.data;
       return {
         ...state,
-        sorting: [sorting],
+        sorting: sorting,
         currentData:
           dataToSort.slice().sort(
             (previousArticle, nextArticle) =>
@@ -82,7 +98,10 @@ const articlesSlice = createSlice({
       ...state,
       isLoading: action.payload
     }),
-    setFetchedAt: (state, action: PayloadAction<Partial<{sport: number; fashion: number}>>) => ({
+    setFetchedAt: (
+      state,
+      action: PayloadAction<Partial<ArticlesStoreState['fetchedAt']>>
+    ) => ({
       ...state,
       fetchedAt: {
         ...state.fetchedAt,
@@ -105,28 +124,27 @@ export const getArticles = createAsyncThunk(
   'articles/fetch',
   async (category: Article['category'], {dispatch, getState}) => {
     const state = (getState() as StoreState).articles;
-    if (!state.fetchedAt[category]) {
-      dispatch(setIsLoading(true));
-      try {
-        const data = await fetch<
-          {articles: Article[]}
-        >(`/articles/${resolveCategoryEndpoint(category)}`);
-        dispatch(setArticles([...state.data, ...data.articles]));
-        dispatch(setFetchedAt({
-          [category]: Date.now()
-        }));
-        dispatch(setIsLoading(false));
-      } catch (error) {
-        dispatch(setError(error.message));
-      }
+    dispatch(setIsLoading(true));
+    try {
+      const data = await fetch<
+        {articles: Article[]}
+      >(`/articles/${resolveCategoryEndpoint(category)}`);
+      dispatch(setArticles([...state.data, ...data.articles]));
+      dispatch(setFetchedAt({
+        [category]: Date.now()
+      }));
+    } catch (error) {
+      dispatch(setError(error.message));
     }
+    dispatch(setIsLoading(false));
     dispatch(setFilters(unionWith(state.filters, [{
       key: 'category',
       is: category
     }], isEqual)));
+    if (state.sorting) {
+      dispatch(setSorting(state.sorting));
+    }
   }
 );
-
-export type ArticlesStoreState = ReturnType<typeof articlesSlice.reducer>;
 
 export default articlesSlice;
