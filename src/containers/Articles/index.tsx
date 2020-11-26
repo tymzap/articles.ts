@@ -20,6 +20,7 @@ import Article from 'components/Article';
 import {Filter} from 'store/articles';
 import BREAKPOINTS from 'config/breakpoints';
 import useWindowSize from 'hooks/useWindowSize';
+import i18n from 'services/i18n';
 
 const Articles = () => {
   const {
@@ -61,8 +62,8 @@ const Articles = () => {
       isLoading={isLoading}
     >
       <Section title={'Data sources'}>
-        <Item key={'fashion'}>Fashion</Item>
-        <Item key={'sport'}>Sport</Item>
+        <Item key={'fashion'}>{i18n.t('article.category.fashion')}</Item>
+        <Item key={'sport'}>{i18n.t('article.category.sport')}</Item>
       </Section>
     </ListBox>
   );
@@ -101,7 +102,7 @@ const Articles = () => {
               {renderListBox()}
             </Flex>
             <Picker
-              label={'Sort by'}
+              label={i18n.t('articles.sorting.label')}
               onSelectionChange={(key) => {
                 setSorting(
                   key === 'dateAsc' ? {
@@ -126,10 +127,10 @@ const Articles = () => {
                   : 0
               }
             >
-              <Item key={'dateAsc'}>Date: ascending</Item>
-              <Item key={'dateDesc'}>Date: descending</Item>
-              <Item key={'titleAsc'}>Title: ascending</Item>
-              <Item key={'titleDesc'}>Title: descending</Item>
+              <Item key={'dateAsc'}>{i18n.t('articles.sorting.options.dateAsc')}</Item>
+              <Item key={'dateDesc'}>{i18n.t('articles.sorting.options.dateDesc')}</Item>
+              <Item key={'titleAsc'}>{i18n.t('articles.sorting.options.titleAsc')}</Item>
+              <Item key={'titleDesc'}>{i18n.t('articles.sorting.options.titleDesc')}</Item>
             </Picker>
           </Flex>
           <Flex
@@ -159,15 +160,15 @@ const Articles = () => {
                 ? (
                   <>
                     <ErrorIllustration />
-                    <Heading>Sorry, we have a problem</Heading>
-                    <Content>Please try using filters again</Content>
+                    <Heading>{i18n.t('articles.error.generic.title')}</Heading>
+                    <Content>{i18n.t('articles.error.generic.description')}</Content>
                   </>
                 )
                 : (
                   <>
                     <NoSearchResultsIllustration />
-                    <Heading>No results!</Heading>
-                    <Content>Please use filters to find some articles</Content>
+                    <Heading>{i18n.t('articles.error.notFound.title')}</Heading>
+                    <Content>{i18n.t('articles.error.notFound.description')}</Content>
                   </>
                 )
               }

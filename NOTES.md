@@ -12,6 +12,7 @@
 
 ## Architecture
 - Redux Toolkit was used to reduce state management boilerplate code and to provide solid ground for future development
+- All language strings stored in JSON file for easy modification and addition of new languages
 
 ## User experience
 - Adobe Spectrum UI kit was used, it provides consistent components design and rich ARIA support
@@ -21,6 +22,7 @@
 - Sorting by title
 - Color scheme switcher (dark/light)
 - Saving basic app data in local storage
+- i18n support
 
 # What can be improved
 - If real API will be connected, logic should be written for caching/paginating server response. Right now this logic is really simple and assumes that every call to api fetches all articles

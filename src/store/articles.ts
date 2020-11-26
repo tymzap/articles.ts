@@ -139,6 +139,7 @@ export const getArticles = createAsyncThunk(
       dispatch(setFetchedAt({
         [category]: Date.now()
       }));
+      dispatch(setError(''));
     } catch (error) {
       dispatch(setError(error.message));
       dispatch(setFilters([]));

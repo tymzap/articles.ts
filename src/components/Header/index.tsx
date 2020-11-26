@@ -14,6 +14,7 @@ import ArticleIcon from '@spectrum-icons/workflow/Article';
 import {useColorScheme} from 'hooks/store/app';
 import BREAKPOINTS from 'config/breakpoints';
 import useWindowSize from 'hooks/useWindowSize';
+import i18n from 'services/i18n';
 
 const Header = () => {
   const {width} = useWindowSize();
@@ -29,16 +30,16 @@ const Header = () => {
           <ArticleIcon marginTop={width >= BREAKPOINTS.TABLET ? undefined : 'size-225'}/>
           <Flex direction={'column'}>
             <Heading level={1} marginBottom={0}>
-              articles.ts
+              {i18n.t('header.title')}
             </Heading>
-            <Text isHidden={width < BREAKPOINTS.TABLET}>Simple articles fetcher</Text>
+            <Text isHidden={width < BREAKPOINTS.TABLET}>{i18n.t('header.slogan')}</Text>
           </Flex>
         </Flex>
         <ActionButton
           onPress={() => {
             setColorScheme(colorScheme === 'light' ? 'dark' : 'light');
           }}
-          aria-label={'Change color scheme'}
+          aria-label={i18n.t('header.changeColorSchemeButtonLabel')}
           marginTop={'size-225'}
         >
           {colorScheme === 'light' ? <LightIcon /> : <MoonIcon />}

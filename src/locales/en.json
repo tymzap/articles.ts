@@ -1,0 +1,34 @@
+{
+  "article": {
+    "category": {
+      "fashion": "Fashion",
+      "sport": "Sport"
+    }
+  },
+  "articles": {
+    "error": {
+      "generic": {
+        "title": "Sorry, we have a problem!",
+        "description": "Please try using filters again"
+      },
+      "notFound": {
+        "title": "No results!",
+        "description": "Please use filters to find some articles"
+      }
+    },
+    "sorting": {
+      "label": "Sort by",
+      "options": {
+        "dateAsc": "Date: ascending",
+        "dateDesc": "Date: descending",
+        "titleAsc": "Title: ascending",
+        "titleDesc": "Title: descending"
+      }
+    }
+  },
+  "header": {
+    "title": "articles.ts",
+    "slogan": "Simple articles fetcher",
+    "changeColorSchemeButtonLabel": "Change color scheme"
+  }
+}
