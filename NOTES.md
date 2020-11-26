@@ -20,6 +20,8 @@
 # Extra features
 - Sorting by title
 - Color scheme switcher (dark/light)
+- Saving basic app data in local storage
 
 # What can be improved
 - If real API will be connected, logic should be written for caching/paginating server response. Right now this logic is really simple and assumes that every call to api fetches all articles
+- Store's subscribe method updates local storage on every change, this needs to be changed when store will grow
