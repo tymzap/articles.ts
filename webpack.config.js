@@ -6,9 +6,15 @@ const BrowsersyncPlugin = require('browser-sync-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 
-const { APP_URL, API_URL} = process.env;
+const {
+    APP_URL,
+    API_URL,
+    FETCHED_DATA_EXPIRES_IN,
+    NODE_ENV
+} = process.env;
 
 module.exports = {
+    mode: NODE_ENV === 'development' ? 'development' : 'production',
     entry: './src/index.tsx',
     output: {
         filename: 'main.js',
@@ -31,6 +37,7 @@ module.exports = {
         new DefinePlugin({
             API_URL: JSON.stringify(API_URL),
             APP_URL: JSON.stringify(APP_URL),
+            FETCHED_DATA_EXPIRES_IN: JSON.stringify(FETCHED_DATA_EXPIRES_IN)
         }),
         new MiniCssExtractPlugin()
     ],
@@ -44,7 +51,12 @@ module.exports = {
                     options: {
                         configFile: 'tsconfig.json'
                     }
-                }
+                },
+            },
+            {
+                enforce: 'pre',
+                test: /\.js$/,
+                loader: NODE_ENV === 'development' ? 'source-map-loader' : undefined
             },
             {
                 test: /\.css$/,

@@ -8,7 +8,7 @@
 - All app styles are extracted into separate file and lazy loaded via webpack plugin
 - Tree shaking was incorporated to reduce an amount of unused code (eg. lodash separate module imports)
 - dayjs used instead of moment to save bundle size
-- Articles are fetched from API only when not present in app state to save requests
+- Articles are fetched from API only when not present in app state, or when fetched some time ago (time defined in .env) to save requests
 
 ## Architecture
 - Redux Toolkit was used to reduce state management boilerplate code and to provide solid ground for future development

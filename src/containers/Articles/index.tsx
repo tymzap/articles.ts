@@ -1,11 +1,9 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Flex,
   Picker,
   Item,
-  ListBox,
-  Section,
   Content,
   IllustratedMessage,
   Heading,
@@ -13,60 +11,32 @@ import {
 import ErrorIllustration from '@spectrum-icons/illustrations/Error';
 import NoSearchResultsIllustration from '@spectrum-icons/illustrations/NoSearchResults';
 import omit from 'lodash/omit';
-import compact from 'lodash/compact';
 
 import {useArticles} from 'hooks/store/articles';
 import Article from 'components/Article';
-import {Filter} from 'store/articles';
 import BREAKPOINTS from 'config/breakpoints';
 import useWindowSize from 'hooks/useWindowSize';
 import i18n from 'services/i18n';
+
+import Filters from './Filters';
 
 const Articles = () => {
   const {
     data,
     error,
     isLoading,
-    filters,
-    fetchedAt,
     sorting,
-    get,
     setSorting,
     setFilters
   } = useArticles();
 
   const {width} = useWindowSize();
 
-  const renderListBox = () => (
-    <ListBox
-      selectionMode={'multiple'}
-      onSelectionChange={(selection) => {
-        if (selection instanceof Set) {
-          const categories = Array.from(selection) as Filter['is'][];
-          const filters: Filter[] = compact(categories.map((category) => {
-            if (!fetchedAt[category]) {
-              get(category);
-              return;
-            } else {
-              return {
-                key: 'category',
-                is: category
-              }
-            }
-          }));
-          setFilters(filters);
-        }
-      }}
-      selectedKeys={filters.map((filter) => filter.is)}
-      width={width >= BREAKPOINTS.PHONE ? 'size-3000' : '100%'}
-      isLoading={isLoading}
-    >
-      <Section title={'Data sources'}>
-        <Item key={'fashion'}>{i18n.t('article.category.fashion')}</Item>
-        <Item key={'sport'}>{i18n.t('article.category.sport')}</Item>
-      </Section>
-    </ListBox>
-  );
+  useEffect(() => {
+    if (error) {
+      setFilters([]);
+    }
+  }, [error]);
 
   return (
     <View
@@ -78,7 +48,7 @@ const Articles = () => {
         <Flex
           isHidden={width >= BREAKPOINTS.PHONE && width < BREAKPOINTS.DESKTOP}
         >
-          {renderListBox()}
+          <Filters />
         </Flex>
         <Flex
           direction={'column'}
@@ -99,7 +69,7 @@ const Articles = () => {
                 width < BREAKPOINTS.PHONE || width >= BREAKPOINTS.DESKTOP
               }
             >
-              {renderListBox()}
+              <Filters />
             </Flex>
             <Picker
               label={i18n.t('articles.sorting.label')}
@@ -126,6 +96,7 @@ const Articles = () => {
                   ? `${sorting.key}${sorting.order === 'ASC' ? 'Asc' : 'Desc'}`
                   : 0
               }
+              isHidden={!data.length && width < BREAKPOINTS.TABLET}
             >
               <Item key={'dateAsc'}>{i18n.t('articles.sorting.options.dateAsc')}</Item>
               <Item key={'dateDesc'}>{i18n.t('articles.sorting.options.dateDesc')}</Item>
@@ -150,7 +121,7 @@ const Articles = () => {
               justifyContent={'center'}
               alignItems={'center'}
               isHidden={!!data.length && !error}
-              margin={'size-1000'}
+              margin={width >= BREAKPOINTS.DESKTOP ? 'size-1000' : 'size-250'}
               width={'100%'}
             >
               <IllustratedMessage

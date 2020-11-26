@@ -9,6 +9,7 @@ import {resolveCategoryEndpoint} from 'utils/article';
 import {StoreState} from 'store';
 import {compare} from 'utils/array';
 import {FORMAT} from 'constants/date';
+import ms from 'ms';
 
 export type Filter = {
   key: Extract<keyof Article, 'category'>, is: Article['category'];
@@ -130,21 +131,35 @@ export const getArticles = createAsyncThunk(
   'articles/fetch',
   async (category: Article['category'], {dispatch, getState}) => {
     const state = (getState() as StoreState).articles;
-    dispatch(setIsLoading(true));
-    try {
-      const data = await fetch<
-        {articles: Article[]}
-      >(`/articles/${resolveCategoryEndpoint(category)}`);
-      dispatch(setArticles([...state.data, ...data.articles]));
-      dispatch(setFetchedAt({
-        [category]: Date.now()
-      }));
-      dispatch(setError(''));
-    } catch (error) {
-      dispatch(setError(error.message));
-      dispatch(setFilters([]));
+    if (
+      !state.fetchedAt[category] ||
+      Date.now() - state.fetchedAt[category] >= ms(FETCHED_DATA_EXPIRES_IN)
+    ) {
+      dispatch(setIsLoading(true));
+      try {
+        const data = await fetch<
+          {articles: Article[]}
+          >(`/articles/${resolveCategoryEndpoint(category)}`);
+        dispatch(
+          setArticles(
+            [
+              ...state.data.filter(
+                (article) => article.category !== category
+              ),
+              ...data.articles
+            ]
+          )
+        );
+        dispatch(setFetchedAt({
+          [category]: Date.now()
+        }));
+        dispatch(setError(''));
+      } catch (error) {
+        dispatch(setError(error.message));
+        dispatch(setFilters([]));
+      }
+      dispatch(setIsLoading(false));
     }
-    dispatch(setIsLoading(false));
     dispatch(setFilters(unionWith(state.filters, [{
       key: 'category',
       is: category
